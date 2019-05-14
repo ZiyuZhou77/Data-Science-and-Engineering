@@ -1,0 +1,37 @@
+import os
+import pandas as pd
+import numpy as np
+import nltk
+from nltk.stem import WordNetLemmatizer
+import pandas as pd
+import re
+nltk.download('punkt')
+nltk.download('wordnet')
+
+lemmatizer = WordNetLemmatizer()
+
+def lemmatise():
+    
+    data = pd.read_csv('AllTeamsS3.csv', encoding = 'ISO-8859-1')
+    data['description'] = data['description'].str.lower()
+    clean_data = []
+    desc = data['description'].tolist()
+    print(desc[0])
+    for i in desc: # Removing special characters from the job description
+           a = re.sub('[^A-Za-z0-9]+', ' ', str(i))
+           clean_data.append(a)
+    #print('--------------------------------')
+    lemmatised_data=[]
+    j = 0
+    for i in clean_data:
+        # Tokenizing and lemmatizing the data
+        print('Job Number: ' + str(j) + '==================')
+        word_list = nltk.word_tokenize(i)
+        lemmatized_output = ' '.join([lemmatizer.lemmatize(w) for w in word_list])
+        lemmatised_data.append(lemmatized_output)
+        j = j+1
+    #print(lemmatised_data[1])
+    data['description'] = lemmatised_data
+    data.to_csv('LemmatisedDataS3.csv')
+  
+lemmatise()
